@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1220" />
+  <meta name="description" content="Aplicación administrativa PWA para operación de supermercado: caja, compras, gastos, inventario, proveedores y movimientos." />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="./assets/icon-192.png" />
+  <link rel="icon" href="./assets/icon-192.png" />
+  <title>MercadoOS Admin</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="app-frame">
+    <aside class="rail" aria-label="Navegación principal">
+      <div class="brand-block">
+        <div class="brand-emblem">MO</div>
+        <div>
+          <strong id="appName">MercadoOS</strong>
+          <span>Admin Retail</span>
+        </div>
+      </div>
+
+      <nav class="module-nav">
+        <button class="module-link active" data-view="home"><span>Inicio operativo</span></button>
+        <button class="module-link" data-view="cash"><span>Caja e ingresos</span></button>
+        <button class="module-link" data-view="inventory"><span>Inventario</span></button>
+        <button class="module-link" data-view="purchases"><span>Compras y CXP</span></button>
+        <button class="module-link" data-view="expenses"><span>Gastos</span></button>
+        <button class="module-link" data-view="movements"><span>Movimientos</span></button>
+        <button class="module-link" data-view="suppliers"><span>Proveedores</span></button>
+        <button class="module-link" data-view="settings"><span>Conexión</span></button>
+      </nav>
+
+      <div class="rail-footer">
+        <div class="env-card">
+          <small>Ambiente</small>
+          <strong id="connectionMode">Demo local</strong>
+          <p id="connectionDescription">Listo para presentar sin conexión.</p>
+        </div>
+      </div>
+    </aside>
+
+    <main class="workspace">
+      <header class="workspace-header">
+        <div>
+          <div class="breadcrumb">Supermercado / Administración</div>
+          <h1 id="viewTitle">Inicio operativo</h1>
+          <p id="viewSubtitle">Centro de trabajo para controlar la jornada administrativa.</p>
+        </div>
+        <div class="header-actions">
+          <button class="soft-btn" id="installBtn" hidden>Instalar app</button>
+          <button class="soft-btn" id="refreshBtn">Actualizar</button>
+          <button class="primary-btn" data-view-target="cash">Nueva venta</button>
+        </div>
+      </header>
+
+      <section id="toast" class="toast" aria-live="polite" hidden></section>
+
+      <section id="home" class="screen active-screen">
+        <div class="home-hero">
+          <div>
+            <span class="overline">Aplicación administrativa</span>
+            <h2 id="storeName">Supermercado La Central</h2>
+            <p>Un espacio de trabajo para registrar operación, controlar inventario, revisar cuentas por pagar y tomar decisiones administrativas sin depender de Excel manual.</p>
+          </div>
+          <div class="day-card">
+            <small>Jornada</small>
+            <strong id="currentDateLabel">Hoy</strong>
+            <span id="currentTimeLabel">--:--</span>
+          </div>
+        </div>
+
+        <div class="ops-grid" id="operationsGrid"></div>
+
+        <div class="work-grid">
+          <article class="surface large-surface">
+            <div class="surface-header">
+              <div>
+                <span class="overline">Bandeja administrativa</span>
+                <h3>Acciones sugeridas</h3>
+              </div>
+              <button class="text-btn" data-view-target="inventory">Ver inventario</button>
+            </div>
+            <div id="actionList" class="action-list"></div>
+          </article>
+
+          <article class="surface">
+            <div class="surface-header">
+              <div>
+                <span class="overline">Resumen operativo</span>
+                <h3>Estado del negocio</h3>
+              </div>
+            </div>
+            <div id="businessState" class="state-stack"></div>
+          </article>
+        </div>
+
+        <article class="surface">
+          <div class="surface-header">
+            <div>
+              <span class="overline">Registro reciente</span>
+              <h3>Última actividad de almacén</h3>
+            </div>
+            <button class="text-btn" data-view-target="movements">Abrir módulo</button>
+          </div>
+          <div class="table-scroll"><table id="homeMovementsTable"></table></div>
+        </article>
+      </section>
+
+      <section id="cash" class="screen">
+        <div class="module-layout">
+          <article class="surface form-surface">
+            <div class="surface-header">
+              <div>
+                <span class="overline">Caja</span>
+                <h3>Registrar ingreso</h3>
+              </div>
+            </div>
+            <form id="saleForm" class="app-form">
+              <label>Fecha<input name="fecha" type="date" /></label>
+              <label>Canal<select name="canal"><option>Mostrador</option><option>WhatsApp</option><option>Domicilio</option><option>Mayoreo</option></select></label>
+              <label>Método de pago<select name="metodoPago"><option>Efectivo</option><option>Tarjeta</option><option>Transferencia</option><option>Vales</option></select></label>
+              <label>Subtotal<input name="subtotal" type="number" step="0.01" placeholder="1250" required /></label>
+              <label>Descuento<input name="descuento" type="number" step="0.01" value="0" /></label>
+              <label>Notas<input name="notas" placeholder="Pedido mostrador, cliente frecuente..." /></label>
+              <button class="primary-btn full" type="submit">Guardar ingreso</button>
+            </form>
+          </article>
+
+          <article class="surface list-surface">
+            <div class="surface-header">
+              <div>
+                <span class="overline">Caja</span>
+                <h3>Ingresos recientes</h3>
+              </div>
+              <span class="counter" id="salesCounter">0 registros</span>
+            </div>
+            <div class="table-scroll"><table id="salesTable"></table></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="inventory" class="screen">
+        <div class="module-stack">
+          <div class="inventory-toolbar">
+            <div>
+              <span class="overline">Catálogo operativo</span>
+              <h3>Productos, costos, precios y stock</h3>
+            </div>
+            <button class="primary-btn" id="newProductBtn">Nuevo producto</button>
+          </div>
+
+          <div class="drawer" id="productDrawer" hidden>
+            <article class="surface form-surface compact-form">
+              <div class="surface-header">
+                <div><span class="overline">Inventario</span><h3>Alta de producto</h3></div>
+                <button class="icon-btn" id="closeProductDrawer" type="button">×</button>
+              </div>
+              <form id="productForm" class="app-form three-cols">
+                <label>SKU<input name="sku" placeholder="SKU-CAF-001" required /></label>
+                <label>Producto<input name="nombre" placeholder="Café molido 500 g" required /></label>
+                <label>Categoría<input name="categoria" placeholder="Abarrotes" /></label>
+                <label>Unidad<select name="unidad"><option>pz</option><option>kg</option><option>lt</option><option>cartón</option><option>caja</option></select></label>
+                <label>Costo unitario<input name="costoUnitario" type="number" step="0.01" placeholder="35" /></label>
+                <label>Precio venta<input name="precioVenta" type="number" step="0.01" placeholder="59" /></label>
+                <label>Stock actual<input name="stockActual" type="number" step="0.01" placeholder="40" /></label>
+                <label>Stock mínimo<input name="stockMinimo" type="number" step="0.01" placeholder="12" /></label>
+                <button class="primary-btn" type="submit">Guardar producto</button>
+              </form>
+            </article>
+          </div>
+
+          <div class="inventory-status" id="inventoryStatus"></div>
+          <article class="surface">
+            <div class="surface-header">
+              <div><span class="overline">Inventario</span><h3>Catálogo de productos</h3></div>
+              <span class="counter" id="productsCounter">0 productos</span>
+            </div>
+            <div class="table-scroll"><table id="inventoryTable"></table></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="purchases" class="screen">
+        <article class="surface">
+          <div class="surface-header">
+            <div>
+              <span class="overline">Compras</span>
+              <h3>Facturas de proveedores y cuentas por pagar</h3>
+            </div>
+            <span class="counter" id="purchasesCounter">0 registros</span>
+          </div>
+          <div class="payables-summary" id="payablesSummary"></div>
+          <div class="table-scroll"><table id="purchasesTable"></table></div>
+        </article>
+      </section>
+
+      <section id="expenses" class="screen">
+        <div class="module-layout">
+          <article class="surface form-surface">
+            <div class="surface-header"><div><span class="overline">Operación</span><h3>Registrar gasto</h3></div></div>
+            <form id="expenseForm" class="app-form">
+              <label>Fecha<input name="fecha" type="date" /></label>
+              <label>Categoría<select name="categoria"><option>Renta</option><option>Nómina</option><option>Luz</option><option>Agua</option><option>Marketing</option><option>Mantenimiento</option><option>Merma</option><option>Transporte</option><option>Empaque</option></select></label>
+              <label>Método de pago<select name="metodoPago"><option>Efectivo</option><option>Tarjeta</option><option>Transferencia</option></select></label>
+              <label>Subtotal<input name="subtotal" type="number" step="0.01" placeholder="850" required /></label>
+              <label>Estatus<select name="estatus"><option>Pagado</option><option>Pendiente</option></select></label>
+              <label>Notas<input name="notas" placeholder="Detalle administrativo" /></label>
+              <button class="primary-btn full" type="submit">Guardar gasto</button>
+            </form>
+          </article>
+
+          <article class="surface list-surface">
+            <div class="surface-header">
+              <div><span class="overline">Gastos</span><h3>Registro operativo</h3></div>
+              <span class="counter" id="expensesCounter">0 registros</span>
+            </div>
+            <div class="table-scroll"><table id="expensesTable"></table></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="movements" class="screen">
+        <div class="module-layout">
+          <article class="surface form-surface">
+            <div class="surface-header"><div><span class="overline">Almacén</span><h3>Registrar movimiento</h3></div></div>
+            <form id="movementForm" class="app-form">
+              <label>Fecha<input name="fecha" type="date" /></label>
+              <label>Tipo<select name="tipo"><option>Entrada compra</option><option>Salida venta</option><option>Ajuste inventario</option><option>Merma</option><option>Traspaso</option></select></label>
+              <label>SKU<input name="sku" placeholder="SKU-ARZ-001" required /></label>
+              <label>Cantidad<input name="cantidad" type="number" step="0.01" placeholder="10 o -5" required /></label>
+              <label>Costo unitario<input name="costoUnitario" type="number" step="0.01" placeholder="18.50" /></label>
+              <label>Motivo<input name="motivo" placeholder="Compra, venta, merma..." /></label>
+              <button class="primary-btn full" type="submit">Guardar movimiento</button>
+            </form>
+          </article>
+
+          <article class="surface list-surface">
+            <div class="surface-header">
+              <div><span class="overline">Inventario</span><h3>Bitácora de movimientos</h3></div>
+              <span class="counter" id="movementsCounter">0 registros</span>
+            </div>
+            <div class="table-scroll"><table id="movementsTable"></table></div>
+          </article>
+        </div>
+      </section>
+
+      <section id="suppliers" class="screen">
+        <article class="surface">
+          <div class="surface-header">
+            <div><span class="overline">Relaciones comerciales</span><h3>Proveedores</h3></div>
+            <span class="counter" id="suppliersCounter">0 proveedores</span>
+          </div>
+          <div class="supplier-grid" id="supplierCards"></div>
+        </article>
+      </section>
+
+      <section id="settings" class="screen">
+        <article class="surface settings-surface">
+          <div class="surface-header">
+            <div><span class="overline">Backend</span><h3>Conexión con Apps Script</h3></div>
+          </div>
+          <p class="muted">La demo puede ir preconectada desde <code>config.js</code>. Así el cliente abre la app desde GitHub Pages y no ve URL, PIN ni configuración técnica.</p>
+          <div id="configStatus" class="notice-box"></div>
+          <form id="settingsForm" class="settings-form">
+            <label>URL API Apps Script<input name="apiUrl" placeholder="https://script.google.com/macros/s/.../exec" /></label>
+            <label>PIN demo<input name="pin" type="password" placeholder="4321" /></label>
+            <div class="settings-actions">
+              <button class="primary-btn" type="submit">Guardar y probar</button>
+              <button class="soft-btn" type="button" id="restoreDefaultSettingsBtn">Restaurar conexión preconfigurada</button>
+              <button class="soft-btn" type="button" id="clearSettingsBtn">Usar demo local</button>
+              <button class="soft-btn" type="button" id="seedBackendBtn">Cargar datos dummy en Sheets</button>
+            </div>
+          </form>
+          <div id="connectionTest" class="notice-box muted">Sin prueba ejecutada.</div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <script src="./config.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

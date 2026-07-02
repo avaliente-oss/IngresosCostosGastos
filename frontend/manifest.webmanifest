@@ -1,0 +1,25 @@
+{
+  "name": "MercadoOS Admin",
+  "short_name": "MercadoOS",
+  "description": "Aplicación administrativa PWA para supermercado: caja, inventario, compras, gastos, proveedores y movimientos.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#eef1f5",
+  "theme_color": "#0b1220",
+  "icons": [
+    {
+      "src": "./assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
