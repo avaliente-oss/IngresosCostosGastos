@@ -5,9 +5,9 @@ window.APP_CONFIG = {
   APP_NAME: 'MercadoOS Admin',
   STORE_NAME: 'Supermercado La Central',
 
-  API_URL: '',
-  DEMO_PIN: '',
+  API_URL: 'https://script.google.com/macros/s/AKfycbzQ-h7IPCduQS8Zg7f9y0JNvgq1BGsdPvscq1za_RSLRFWHVNA11cq9hBCeq5G4EYyT/exec',
+  DEMO_PIN: '1234',
 
-  AUTO_CONNECT: false,
-  ALLOW_MANUAL_CONNECTION: true
+  AUTO_CONNECT: true,
+  ALLOW_MANUAL_CONNECTION: false
 };
